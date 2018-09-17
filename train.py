@@ -16,11 +16,11 @@ from sklearn.metrics import confusion_matrix
 
 from tensorflow import keras
 from keras.models import Sequential
-from keras.layers import Dense, Activation, Dropout
+from keras.layers import Dense, Activation, Dropout, LSTM
 from keras.preprocessing import text, sequence
 from keras import utils
 
-data = pd.read_csv("so-export-0920.csv")
+data = pd.read_csv("mydataUnP.csv")
 data.head()
 
 # Confirm that we have a balanced dataset
@@ -33,7 +33,7 @@ print ("Train size: %d" % train_size)
 print ("Test size: %d" % (len(data) - train_size))
 
 
-train_poststrain_p  = data['post'][:train_size]
+train_posts  = data['post'][:train_size]
 train_tags = data['tags'][:train_size]
 
 test_posts = data['post'][train_size:]
@@ -74,6 +74,7 @@ epochs = 2
 # Build the model
 model = Sequential()
 model.add(Dense(512, input_shape=(max_words,)))
+# model.add(LSTM(150))
 model.add(Activation('relu'))
 model.add(Dropout(0.5))
 model.add(Dense(num_classes))
@@ -89,8 +90,9 @@ history = model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verb
 
 # Evaluate the accuracy of our trained model
 score = model.evaluate(x_test, y_test, batch_size=batch_size, verbose=1)
-print('Test score:', score[0])
+print('\nTest score:', score[0])
 print('Test accuracy:', score[1])
+print('\nSome test cases:\n')
 
 
 # Here's how to generate a prediction on individual examples# Here's
