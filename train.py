@@ -24,7 +24,7 @@ data = pd.read_csv("mydataUnP.csv")
 data.head()
 
 # Confirm that we have a balanced dataset
-# Note: data was randomly shuffled in our BigQuery query
+# data was randomly shuffled in our BigQuery SQL query
 data['tags'].value_counts()
 
 # Split data into train and test
@@ -47,31 +47,30 @@ x_train = tokenize.texts_to_matrix(train_posts)
 x_test = tokenize.texts_to_matrix(test_posts)
 
 
-# Use sklearn utility to convert label strings to numbered index# Use sk
+# Using sklearn utility to convert label strings to numbered index#
 encoder = LabelEncoder()
 encoder.fit(train_tags)
 y_train = encoder.transform(train_tags)
 y_test = encoder.transform(test_tags)
 
-# Converts the labels to a one-hot representation
+# Converts the labels to a one-hot vector representation
 num_classes = np.max(y_train) + 1
 y_train = utils.to_categorical(y_train, num_classes)
 y_test = utils.to_categorical(y_test, num_classes)
 
-# Inspect the dimenstions of our training and test data (this is helpful to debug)
+# Inspect the dimensions of our training and test data
 print('x_train shape:', x_train.shape)
 print('x_test shape:', x_test.shape)
 print('y_train shape:', y_train.shape)
 print('y_test shape:', y_test.shape)
 
 
-# This model trains very quickly and 2 epochs are already more than enough# This m
-# Training for more epochs will likely lead to overfitting on this dataset
-# You can try tweaking these hyperparamaters when using this model with your own data
+# This model trains very quickly and and can overfit after roughly 2 epochs
+# tweaking these hyperparams
 batch_size = 32
 epochs = 2
 
-# Build the model
+# Building the model
 model = Sequential()
 model.add(Dense(512, input_shape=(max_words,)))
 # model.add(LSTM(150))
@@ -84,18 +83,18 @@ model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accur
 
 # model.fit trains the model
 # The validation_split param tells Keras what % of our training data should be used in the validation set
-# You can see the validation loss decreasing slowly when you run this
-# Because val_loss is no longer decreasing we stop training to prevent overfitting
+# the validation loss decreases slowly when run (means its working)
+# when val_loss is no longer decreasing we stop training to prevent overfitting
 history = model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_split=0.1)
 
-# Evaluate the accuracy of our trained model
+# Evaluating the accuracy of the trained model
 score = model.evaluate(x_test, y_test, batch_size=batch_size, verbose=1)
 print('\nTest score:', score[0])
 print('Test accuracy:', score[1])
 print('\nSome test cases:\n')
 
 
-# Here's how to generate a prediction on individual examples# Here's
+# generating label prediction on individual test cases and displaying a few cases
 text_labels = encoder.classes_
 
 for i in range(10):
@@ -126,10 +125,8 @@ for i in range(0, len(y_softmax)):
 def plot_confusion_matrix(cm, classes,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
-    """
-    This function prints and plots the confusion matrix.
-    Normalization can be applied by setting `normalize=True`.
-    """
+    """This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`."""
 
     cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
 
